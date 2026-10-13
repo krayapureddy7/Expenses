@@ -211,6 +211,83 @@ async def auth_logout(request: Request):
     return RedirectResponse(url="/")
 
 
+@app.get("/api/fetch-gmail")
+async def api_fetch_gmail(request: Request, timeframe: str = "current"):
+    """Fetch bills, receipts, and statement alerts from the authenticated Gmail account."""
+    user_id = request.session.get("user_id")
+    token_info = _USER_GMAIL_TOKENS.get(user_id) if user_id else None
+
+    if not token_info or not token_info.get("access_token"):
+        return JSONResponse({
+            "status": "unauthenticated",
+            "message": "Please connect your Google account using the 'Connect Gmail' button first.",
+            "items": []
+        }, status_code=401)
+
+    import re
+    from googleapiclient.discovery import build
+    from google.oauth2.credentials import Credentials
+
+    # Configure query based on current vs past month
+    if timeframe == "past":
+        query = "subject:(bill OR invoice OR statement OR receipt OR payment) older_than:30d newer_than:60d"
+    else:
+        query = "subject:(bill OR invoice OR statement OR receipt OR payment) newer_than:30d"
+
+    try:
+        creds = Credentials(token=token_info["access_token"])
+        service = build("gmail", "v1", credentials=creds, cache_discovery=False)
+        results = service.users().messages().list(userId="me", q=query, maxResults=8).execute()
+        messages = results.get("messages", [])
+
+        if not messages:
+            return JSONResponse({
+                "status": "empty",
+                "message": f"No bills or receipt emails found for {timeframe} month query: '{query}'.",
+                "timeframe": timeframe,
+                "items": []
+            })
+
+        items = []
+        for m in messages:
+            msg = service.users().messages().get(userId="me", id=m["id"], format="full").execute()
+            snippet = msg.get("snippet", "")
+            headers = {h["name"].lower(): h["value"] for h in msg.get("payload", {}).get("headers", [])}
+            subject = headers.get("subject", "No Subject")
+            sender = headers.get("from", "Unknown Sender")
+            date_sent = headers.get("date", "")
+
+            amt_match = re.search(r'\$\s*([0-9]+(?:\.[0-9]{2})?)', f"{subject} {snippet}")
+            amount = float(amt_match.group(1)) if amt_match else None
+
+            cat = "Utilities" if any(w in subject.lower() for w in ["electric", "water", "internet", "power", "utility"]) else \
+                  "Dining" if any(w in subject.lower() for w in ["uber eats", "doordash", "grubhub", "restaurant", "cafe"]) else \
+                  "Subscription" if any(w in subject.lower() for w in ["netflix", "spotify", "google", "apple", "prime"]) else "General"
+
+            items.append({
+                "id": m["id"],
+                "subject": subject,
+                "from": sender,
+                "date": date_sent,
+                "amount": amount,
+                "category": cat,
+                "snippet": snippet[:150]
+            })
+
+        return JSONResponse({
+            "status": "success",
+            "timeframe": timeframe,
+            "count": len(items),
+            "items": items
+        })
+    except Exception as e:
+        return JSONResponse({
+            "status": "error",
+            "message": f"Gmail fetch failed: {str(e)}",
+            "items": []
+        }, status_code=500)
+
+
 @app.get("/api/expenses")
 async def get_expenses_dashboard(user_id: str = "default_user"):
     """Fetch all expenses from Firestore and group by category & month for analytics."""
