@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 <style>
   :root {
     --primary: #059669;
@@ -23,16 +24,17 @@
     --text-secondary: #475569;
     --text-muted: #94a3b8;
     --border: #e2e8f0;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --border-light: #f1f5f9;
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 10px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    --shadow-lg: 0 12px 24px -4px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
   }
 
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    background: var(--bg-main);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background: #f8fafc;
     color: var(--text-primary);
     display: flex;
     flex-direction: column;
@@ -40,61 +42,64 @@
     overflow: hidden;
   }
 
-  /* Header Bar */
+  /* Header Bar with subtle blur */
   header {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
-    padding: 0.85rem 1.75rem;
+    padding: 0.9rem 2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: var(--shadow-sm);
-    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    z-index: 20;
   }
   .brand {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.85rem;
   }
   .brand-icon {
-    width: 38px;
-    height: 38px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25);
+    box-shadow: 0 6px 16px rgba(5, 150, 105, 0.28);
+    transition: transform 0.2s ease;
   }
+  .brand-icon:hover { transform: scale(1.05); }
   .brand-text h1 {
     margin: 0;
-    font-size: 1.125rem;
-    font-weight: 700;
+    font-size: 1.18rem;
+    font-weight: 800;
     letter-spacing: -0.02em;
     color: var(--text-primary);
   }
   .brand-text p {
-    margin: 0;
-    font-size: 0.75rem;
+    margin: 0.15rem 0 0;
+    font-size: 0.76rem;
     color: var(--text-muted);
-    font-weight: 500;
+    font-weight: 600;
   }
   .status-badge {
     display: flex;
     align-items: center;
     gap: 0.45rem;
-    padding: 0.35rem 0.75rem;
+    padding: 0.4rem 0.85rem;
     background: #ecfdf5;
     border: 1px solid #a7f3d0;
     border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.78rem;
+    font-weight: 700;
     color: var(--primary-dark);
   }
   .status-dot {
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--primary-light);
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -102,28 +107,29 @@
   .header-actions {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.85rem;
   }
   .btn-gmail {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.45rem 0.95rem;
+    gap: 0.5rem;
+    padding: 0.48rem 1rem;
     background: #ffffff;
     border: 1px solid #dadce0;
-    border-radius: 8px;
-    font-size: 0.8rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
     font-weight: 600;
     color: #3c4043;
     text-decoration: none;
     cursor: pointer;
-    box-shadow: 0 1px 2px rgba(60,64,67,0.08);
+    box-shadow: 0 1px 3px rgba(60,64,67,0.08);
     transition: all 0.2s ease;
   }
   .btn-gmail:hover {
     background: #f8fafd;
     border-color: #c2e7ff;
-    box-shadow: 0 1px 3px rgba(60,64,67,0.18);
+    box-shadow: 0 2px 6px rgba(60,64,67,0.14);
+    transform: translateY(-1px);
   }
   .btn-gmail.connected {
     background: #ecfdf5;
@@ -131,28 +137,70 @@
     color: var(--primary-dark);
   }
   .google-logo {
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
   }
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: .4; transform: scale(0.9); }
+    50% { opacity: .35; transform: scale(0.9); }
   }
 
-  /* Chat Logs Area */
+  /* Navigation Bar */
+  .nav-tabs {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem 2rem;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 10px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    border: 1px solid transparent;
+    background: transparent;
+  }
+  .nav-tab:hover {
+    background: #f1f5f9;
+    color: var(--text-primary);
+  }
+  .nav-tab.active {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+    color: var(--primary-dark);
+  }
+
+  /* View Containers */
+  .view-container {
+    flex: 1;
+    display: none;
+    overflow-y: auto;
+  }
+  .view-container.active {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Chat View */
   #log {
     flex: 1;
     overflow-y: auto;
-    padding: 1.5rem 1.25rem;
-    max-width: 860px;
+    padding: 1.75rem 1.5rem;
+    max-width: 880px;
     width: 100%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
     scroll-behavior: smooth;
   }
-
   .msg {
     display: flex;
     flex-direction: column;
@@ -171,40 +219,35 @@
     align-self: flex-start;
     align-items: flex-start;
   }
-
   .meta-tag {
-    font-size: 0.72rem;
-    font-weight: 600;
+    font-size: 0.73rem;
+    font-weight: 700;
     color: var(--text-muted);
-    margin-bottom: 0.25rem;
-    padding: 0 0.3rem;
+    margin-bottom: 0.3rem;
+    padding: 0 0.4rem;
   }
-
   .bubble {
     display: inline-block;
-    padding: 0.85rem 1.15rem;
-    border-radius: 16px;
+    padding: 0.95rem 1.25rem;
+    border-radius: 18px;
     font-size: 0.95rem;
-    line-height: 1.55;
+    line-height: 1.6;
     position: relative;
     word-break: break-word;
   }
-
   .msg.user .bubble {
     background: linear-gradient(135deg, var(--primary) 0%, #047857 100%);
     color: #ffffff;
     border-bottom-right-radius: 4px;
-    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.22);
   }
-
   .msg.agent .bubble {
-    background: var(--bot-bubble);
+    background: #ffffff;
     color: var(--text-primary);
     border: 1px solid var(--border);
     border-bottom-left-radius: 4px;
     box-shadow: var(--shadow-sm);
   }
-
   .bubble.rich {
     background: transparent !important;
     border: none !important;
@@ -216,9 +259,9 @@
   /* Quick Suggestion Chips */
   .quick-chips {
     display: flex;
-    gap: 0.5rem;
-    padding: 0 1.25rem 0.5rem;
-    max-width: 860px;
+    gap: 0.55rem;
+    padding: 0.5rem 1.5rem 0.65rem;
+    max-width: 880px;
     width: 100%;
     margin: 0 auto;
     overflow-x: auto;
@@ -227,24 +270,375 @@
   }
   .quick-chips::-webkit-scrollbar { display: none; }
   .chip {
-    padding: 0.45rem 0.85rem;
+    padding: 0.5rem 0.95rem;
     background: #ffffff;
     border: 1px solid var(--border);
     border-radius: 9999px;
-    font-size: 0.8rem;
-    font-weight: 500;
+    font-size: 0.82rem;
+    font-weight: 600;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
+    box-shadow: var(--shadow-sm);
   }
   .chip:hover {
     background: #ecfdf5;
     border-color: #a7f3d0;
     color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+  }
+
+  /* Input Form */
+  form {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1.1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    background: #ffffff;
+    max-width: 880px;
+    width: 100%;
+    margin: 0 auto;
+    align-items: center;
+  }
+  .input-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-icon {
+    position: absolute;
+    left: 1.1rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    font-size: 1.25rem;
+  }
+  input {
+    width: 100%;
+    padding: 0.9rem 1.15rem 0.9rem 2.85rem;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+  }
+  input:focus {
+    border-color: var(--primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
+  }
+  button[type="submit"] {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.9rem 1.45rem;
+    background: linear-gradient(135deg, var(--primary) 0%, #047857 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+  }
+  button[type="submit"]:hover {
     transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(5, 150, 105, 0.35);
+  }
+
+  /* Dashboard View & Glass Cards */
+  .dashboard-view {
+    padding: 2rem;
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .dash-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    width: 100%;
+  }
+  .metric-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.35rem 1.5rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent-emerald) 100%);
+  }
+  .metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .metric-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+  }
+  .metric-icon-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ecfdf5;
+    color: var(--primary);
+  }
+  .metric-val {
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+  .metric-subtitle {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .dash-charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+  }
+  @media (max-width: 820px) {
+    .dash-charts-grid { grid-template-columns: 1fr; }
+  }
+  .chart-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    height: 340px;
+    transition: box-shadow 0.2s ease;
+  }
+  .chart-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+  .chart-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .chart-card-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .chart-canvas-wrapper {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Transactions Table in Dashboard */
+  .trans-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .trans-header {
+    padding: 1.2rem 1.5rem;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .trans-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .trans-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    text-align: left;
+  }
+  .trans-table th {
+    background: #f8fafc;
+    padding: 0.85rem 1.5rem;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .trans-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-primary);
+  }
+  .trans-table tr:last-child td { border-bottom: none; }
+  .trans-table tr:hover td { background: #fafbfc; }
+  .category-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #f1f5f9;
+    color: var(--text-secondary);
+  }
+
+  /* iOS Numbers Style Budget Settings View */
+  .budget-view {
+    padding: 2rem;
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .ios-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .ios-card-header {
+    padding: 1.25rem 1.75rem;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .ios-card-header h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .ios-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.75rem;
+    border-bottom: 1px solid var(--border-light);
+    transition: background 0.15s ease;
+  }
+  .ios-row:hover { background: #fafbfc; }
+  .ios-row:last-child { border-bottom: none; }
+  .ios-label {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+  }
+  .ios-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  .ios-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.45rem 0.85rem;
+    font-family: 'JetBrains Mono', monospace;
+    transition: border-color 0.2s ease;
+  }
+  .ios-input-group:focus-within {
+    border-color: var(--primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(5,150,105,0.1);
+  }
+  .ios-currency {
+    font-weight: 800;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+  .ios-num-input {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    width: 100px;
+    text-align: right;
+    outline: none;
+  }
+  .btn-save-budget {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary) 0%, #047857 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(5,150,105,0.25);
+    transition: all 0.2s ease;
+  }
+  .btn-save-budget:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(5,150,105,0.35);
   }
 
   /* Input Form */
@@ -391,48 +785,313 @@
   </div>
 </header>
 
-<div id="log">
-  <div class="msg agent">
-    <span class="meta-tag">AI Advisor</span>
-    <div class="bubble">
-      👋 Welcome! I am your <b>Smart Expense & Budget Advisor</b>.
-      <br><br>
-      You can track expenses, query past transactions, check monthly budget burn rates, plan budget-friendly dining or outings, and convert currencies.
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="switchTab('chat')">
+    <span class="material-symbols-outlined" style="font-size:1.15rem;">forum</span>
+    <span>AI Chat Advisor</span>
+  </button>
+  <button class="nav-tab" onclick="switchTab('dashboard')">
+    <span class="material-symbols-outlined" style="font-size:1.15rem;">pie_chart</span>
+    <span>Expense Analytics</span>
+  </button>
+  <button class="nav-tab" onclick="switchTab('budget')">
+    <span class="material-symbols-outlined" style="font-size:1.15rem;">tune</span>
+    <span>Monthly Budget Settings</span>
+  </button>
+</div>
+
+<!-- View 1: Chat Advisor -->
+<div id="view-chat" class="view-container active">
+  <div id="log">
+    <div class="msg agent">
+      <span class="meta-tag">AI Advisor</span>
+      <div class="bubble">
+        👋 Welcome! I am your <b>Smart Expense & Budget Advisor</b>.
+        <br><br>
+        You can track expenses, query past transactions, check monthly budget burn rates, plan budget-friendly dining or outings, and convert currencies.
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-chips">
+    <div class="chip" onclick="quickSend('List my current expenses')">
+      <span class="material-symbols-outlined" style="font-size:1rem;">receipt_long</span> List Expenses
+    </div>
+    <div class="chip" onclick="quickSend('Analyze my monthly budget and spending')">
+      <span class="material-symbols-outlined" style="font-size:1rem;">query_stats</span> Analyze Budget
+    </div>
+    <div class="chip" onclick="quickSend('Log an expense: $18.50 for lunch at Ramen Bar today')">
+      <span class="material-symbols-outlined" style="font-size:1rem;">add_card</span> Add $18.50 Lunch
+    </div>
+    <div class="chip" onclick="quickSend('Recommend affordable dinner spots in San Francisco')">
+      <span class="material-symbols-outlined" style="font-size:1rem;">restaurant</span> Recommend Dining
+    </div>
+    <div class="chip" onclick="quickSend('Scan my Gmail for credit card statements, bills, and recent expenses')">
+      <span class="material-symbols-outlined" style="font-size:1rem;">mail</span> Fetch Gmail Bills
+    </div>
+    <div class="chip" onclick="quickSend('Export all expenses to GCS CSV')">
+      <span class="material-symbols-outlined" style="font-size:1rem;">cloud_download</span> Export CSV
+    </div>
+  </div>
+
+  <form id="form">
+    <div class="input-wrapper">
+      <span class="material-symbols-outlined input-icon">chat</span>
+      <input id="input" placeholder="Ask about your budget, log an expense, or plan an outing…" autocomplete="off" autofocus>
+    </div>
+    <button type="submit">
+      <span>Send</span>
+      <span class="material-symbols-outlined" style="font-size:1.15rem; color:white;">send</span>
+    </button>
+  </form>
+</div>
+
+<!-- View 2: Analytics Dashboard (Pie & Bar Charts) -->
+<div id="view-dashboard" class="view-container">
+  <div class="dashboard-view">
+    <div class="dash-metrics-grid">
+      <div class="metric-card">
+        <div class="metric-header">
+          <div class="metric-title">Total Spending</div>
+          <div class="metric-icon-badge">
+            <span class="material-symbols-outlined" style="font-size:1.15rem;">account_balance_wallet</span>
+          </div>
+        </div>
+        <div id="dash-total-spending" class="metric-val">$0.00</div>
+        <div class="metric-subtitle">
+          <span class="material-symbols-outlined" style="font-size:0.95rem;">insights</span>
+          <span>Firestore & Gmail synchronized</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <div class="metric-title">Transactions</div>
+          <div class="metric-icon-badge" style="background:#fef3c7; color:#d97706;">
+            <span class="material-symbols-outlined" style="font-size:1.15rem; color:#d97706;">receipt_long</span>
+          </div>
+        </div>
+        <div id="dash-trans-count" class="metric-val">0</div>
+        <div class="metric-subtitle" style="color:var(--text-secondary);">
+          <span class="material-symbols-outlined" style="font-size:0.95rem; color:var(--text-muted);">verified</span>
+          <span>Verified charge records</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-header">
+          <div class="metric-title">Budget Health</div>
+          <div class="metric-icon-badge" style="background:#e0f2fe; color:#0284c7;">
+            <span class="material-symbols-outlined" style="font-size:1.15rem; color:#0284c7;">speed</span>
+          </div>
+        </div>
+        <div id="dash-budget-status" class="metric-val">Healthy</div>
+        <div id="dash-budget-burn" class="metric-subtitle">
+          <span class="material-symbols-outlined" style="font-size:0.95rem;">check_circle</span>
+          <span>Under monthly ceiling</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="dash-charts-grid">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <h3>
+            <span class="material-symbols-outlined" style="color:var(--primary);">pie_chart</span>
+            <span>Spending by Category</span>
+          </h3>
+          <span class="category-pill">Current Cycle</span>
+        </div>
+        <div class="chart-canvas-wrapper">
+          <canvas id="categoryPieChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <h3>
+            <span class="material-symbols-outlined" style="color:var(--primary);">bar_chart</span>
+            <span>Monthly Spending Velocity</span>
+          </h3>
+          <span class="category-pill">Q3 - Q4 Trend</span>
+        </div>
+        <div class="chart-canvas-wrapper">
+          <canvas id="monthlyBarChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions Table -->
+    <div class="trans-card">
+      <div class="trans-header">
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <span class="material-symbols-outlined" style="color:var(--primary);">list_alt</span>
+          <h3>Recent Transactions</h3>
+        </div>
+        <button class="chip" onclick="quickSend('Export all expenses to GCS CSV')" style="box-shadow:none; padding:0.35rem 0.75rem; font-size:0.78rem;">
+          <span class="material-symbols-outlined" style="font-size:0.95rem;">cloud_download</span> Export CSV
+        </button>
+      </div>
+      <table class="trans-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th style="text-align:right;">Amount</th>
+          </tr>
+        </thead>
+        <tbody id="dash-transactions-body">
+          <tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2rem;">Loading transactions...</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
 
-<div class="quick-chips">
-  <div class="chip" onclick="quickSend('List my current expenses')">
-    <span class="material-symbols-outlined" style="font-size:1rem;">receipt_long</span> List Expenses
-  </div>
-  <div class="chip" onclick="quickSend('Analyze my monthly budget and spending')">
-    <span class="material-symbols-outlined" style="font-size:1rem;">query_stats</span> Analyze Budget
-  </div>
-  <div class="chip" onclick="quickSend('Log an expense: $18.50 for lunch at Ramen Bar today')">
-    <span class="material-symbols-outlined" style="font-size:1rem;">add_card</span> Add $18.50 Lunch
-  </div>
-  <div class="chip" onclick="quickSend('Recommend affordable dinner spots in San Francisco')">
-    <span class="material-symbols-outlined" style="font-size:1rem;">restaurant</span> Recommend Dining
-  </div>
-  <div class="chip" onclick="quickSend('Scan my Gmail for credit card statements, bills, and recent expenses')">
-    <span class="material-symbols-outlined" style="font-size:1rem;">mail</span> Fetch Gmail Bills
-  </div>
-  <div class="chip" onclick="quickSend('Export all expenses to GCS CSV')">
-    <span class="material-symbols-outlined" style="font-size:1rem;">cloud_download</span> Export CSV
+<!-- View 3: Monthly Budget Settings (iOS Numbers Style) -->
+<div id="view-budget" class="view-container">
+  <div class="budget-view">
+    <div class="ios-card">
+      <div class="ios-card-header">
+        <div>
+          <h2>Monthly Budget Limits</h2>
+          <div style="font-size:0.8rem; color:var(--text-muted); font-weight:500;">Set your targets like Apple Numbers & Wallet</div>
+        </div>
+        <button class="btn-save-budget" onclick="saveBudgetSettings()">Save Targets</button>
+      </div>
+
+      <div class="ios-row">
+        <div class="ios-label">
+          <div class="ios-icon-box" style="background:linear-gradient(135deg, #059669, #047857);">
+            <span class="material-symbols-outlined" style="font-size:1.15rem;">payments</span>
+          </div>
+          <div>
+            <div>Overall Monthly Limit</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Total ceiling for the month</div>
+          </div>
+        </div>
+        <div class="ios-input-group">
+          <span class="ios-currency">$</span>
+          <input id="b-monthly-limit" class="ios-num-input" type="number" step="50" value="2000" oninput="updateBudgetSummary()">
+        </div>
+      </div>
+
+      <div class="ios-row">
+        <div class="ios-label">
+          <div class="ios-icon-box" style="background:linear-gradient(135deg, #f59e0b, #d97706);">
+            <span class="material-symbols-outlined" style="font-size:1.15rem;">restaurant</span>
+          </div>
+          <div>
+            <div>Dining & Cafes</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Restaurants, coffees & delivery</div>
+          </div>
+        </div>
+        <div class="ios-input-group">
+          <span class="ios-currency">$</span>
+          <input id="b-dining-limit" class="ios-num-input" type="number" step="25" value="400" oninput="updateBudgetSummary()">
+        </div>
+      </div>
+
+      <div class="ios-row">
+        <div class="ios-label">
+          <div class="ios-icon-box" style="background:linear-gradient(135deg, #10b981, #059669);">
+            <span class="material-symbols-outlined" style="font-size:1.15rem;">shopping_cart</span>
+          </div>
+          <div>
+            <div>Groceries & Market</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Supermarkets & essentials</div>
+          </div>
+        </div>
+        <div class="ios-input-group">
+          <span class="ios-currency">$</span>
+          <input id="b-groceries-limit" class="ios-num-input" type="number" step="25" value="500">
+        </div>
+      </div>
+
+      <div class="ios-row">
+        <div class="ios-label">
+          <div class="ios-icon-box" style="background:linear-gradient(135deg, #8b5cf6, #7c3aed);">
+            <span class="material-symbols-outlined" style="font-size:1.15rem;">shopping_bag</span>
+          </div>
+          <div>
+            <div>Retail & Shopping</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Personal & discretionary purchases</div>
+          </div>
+        </div>
+        <div class="ios-input-group">
+          <span class="ios-currency">$</span>
+          <input id="b-shopping-limit" class="ios-num-input" type="number" step="25" value="300">
+        </div>
+      </div>
+
+      <div class="ios-row">
+        <div class="ios-label">
+          <div class="ios-icon-box" style="background:linear-gradient(135deg, #06b6d4, #0891b2);">
+            <span class="material-symbols-outlined" style="font-size:1.15rem;">bolt</span>
+          </div>
+          <div>
+            <div>Utilities & Recurring Bills</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Power, mobile, internet, subscriptions</div>
+          </div>
+        </div>
+        <div class="ios-input-group">
+          <span class="ios-currency">$</span>
+          <input id="b-utilities-limit" class="ios-num-input" type="number" step="25" value="250">
+        </div>
+      </div>
+
+      <div class="ios-row">
+        <div class="ios-label">
+          <div class="ios-icon-box" style="background:linear-gradient(135deg, #ec4899, #db2777);">
+            <span class="material-symbols-outlined" style="font-size:1.15rem;">savings</span>
+          </div>
+          <div>
+            <div>Monthly Savings Goal</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Emergency fund or investment target</div>
+          </div>
+        </div>
+        <div class="ios-input-group">
+          <span class="ios-currency">$</span>
+          <input id="b-savings-goal" class="ios-num-input" type="number" step="50" value="500">
+        </div>
+      </div>
+    </div>
+
+    <!-- Apple Numbers Style Financial Health Card -->
+    <div class="ios-card" style="padding:1.5rem 1.75rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <div style="display:flex; align-items:center; gap:0.55rem;">
+          <span class="material-symbols-outlined" style="color:var(--primary);">donut_small</span>
+          <h3 style="margin:0; font-size:1.05rem; font-weight:800;">Budget Allocation Health</h3>
+        </div>
+        <span id="budget-summary-badge" class="status-badge">Balanced</span>
+      </div>
+      <p style="margin:0 0 1rem; font-size:0.86rem; color:var(--text-secondary); line-height:1.5;">
+        Target ceilings help your AI advisor detect overspending and proactively suggest substitutions or affordable recommendations.
+      </p>
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:14px; padding:1.1rem; display:flex; justify-content:space-around; text-align:center;">
+        <div>
+          <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Allocated</div>
+          <div id="budget-alloc-val" style="font-size:1.3rem; font-weight:800; color:var(--text-primary); margin-top:0.25rem;">$1,450</div>
+        </div>
+        <div style="border-right:1px solid var(--border);"></div>
+        <div>
+          <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Savings Ratio</div>
+          <div id="budget-savings-ratio" style="font-size:1.3rem; font-weight:800; color:var(--primary); margin-top:0.25rem;">25%</div>
+        </div>
+        <div style="border-right:1px solid var(--border);"></div>
+        <div>
+          <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Discretionary</div>
+          <div id="budget-unalloc-val" style="font-size:1.3rem; font-weight:800; color:#3b82f6; margin-top:0.25rem;">$550</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<form id="form">
-  <div class="input-wrapper">
-    <span class="material-symbols-outlined input-icon">chat</span>
-    <input id="input" placeholder="Ask about your budget, log an expense, or plan an outing…" autocomplete="off" autofocus>
-  </div>
-  <button type="submit">
-    <span>Send</span>
-    <span class="material-symbols-outlined" style="font-size:1.15rem; color:white;">send</span>
-  </button>
-</form>
+
 
 <script>
 const log = document.getElementById("log");
@@ -660,6 +1319,249 @@ async function checkAuthStatus() {
 }
 
 checkAuthStatus();
+
+// Tab Switching & View Router
+let pieChartInstance = null;
+let barChartInstance = null;
+
+function switchTab(tabId) {
+  document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".view-container").forEach(v => v.classList.remove("active"));
+  
+  const targetView = document.getElementById("view-" + tabId);
+  if (targetView) targetView.classList.add("active");
+
+  const clickedTab = Array.from(document.querySelectorAll(".nav-tab")).find(btn => btn.getAttribute("onclick")?.includes(tabId));
+  if (clickedTab) clickedTab.classList.add("active");
+
+  if (tabId === "dashboard") {
+    loadAnalyticsDashboard();
+  } else if (tabId === "budget") {
+    loadBudgetSettings();
+  }
+}
+
+// Analytics Dashboard Chart.js Renderers
+async function loadAnalyticsDashboard() {
+  try {
+    const res = await fetch("/api/expenses");
+    const data = await res.json();
+    
+    document.getElementById("dash-total-spending").textContent = "$" + (data.total_spending || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById("dash-trans-count").textContent = data.transaction_count || 0;
+    
+    // Check against monthly limit
+    const budgetRes = await fetch("/api/budget");
+    const budgetData = await budgetRes.json();
+    const limit = budgetData.monthly_limit || 2000;
+    const spent = data.total_spending || 0;
+    const pct = Math.round((spent / limit) * 100);
+    const statusEl = document.getElementById("dash-budget-status");
+    const burnEl = document.getElementById("dash-budget-burn");
+    
+    if (spent > limit) {
+      statusEl.textContent = "Over Budget";
+      statusEl.style.color = "#ef4444";
+      burnEl.textContent = `${pct}% of monthly cap ($${limit})`;
+    } else {
+      statusEl.textContent = "Healthy";
+      statusEl.style.color = "#059669";
+      burnEl.textContent = `${pct}% of monthly cap ($${limit})`;
+    }
+
+    renderCharts(data.by_category || {}, data.by_month || {});
+
+    // Render Recent Transactions Table
+    const tbody = document.getElementById("dash-transactions-body");
+    if (tbody && data.recent_transactions) {
+      if (data.recent_transactions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2rem;">No transactions recorded yet.</td></tr>';
+      } else {
+        tbody.innerHTML = data.recent_transactions.map(item => `
+          <tr>
+            <td style="font-family:'JetBrains Mono', monospace; font-size:0.82rem; color:var(--text-muted);">${item.date || '—'}</td>
+            <td style="font-weight:600;">${item.description || 'Expense'}</td>
+            <td><span class="category-pill">${item.category || 'General'}</span></td>
+            <td style="text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700; color:var(--primary-dark);">$${Number(item.amount || 0).toFixed(2)}</td>
+          </tr>
+        `).join('');
+      }
+    }
+  } catch (e) {
+    console.error("Dashboard load failed:", e);
+  }
+}
+
+function renderCharts(categories, monthly) {
+  const catLabels = Object.keys(categories);
+  const catValues = Object.values(categories);
+  
+  // Palette for categories
+  const colors = [
+    '#059669', '#10b981', '#34d399', '#f59e0b', '#fbbf24',
+    '#8b5cf6', '#a78bfa', '#06b6d4', '#ec4899', '#64748b'
+  ];
+
+  // 1. Category Pie / Donut Chart
+  const pieCtx = document.getElementById('categoryPieChart')?.getContext('2d');
+  if (pieCtx) {
+    if (pieChartInstance) pieChartInstance.destroy();
+    pieChartInstance = new Chart(pieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: catLabels.length ? catLabels : ['No Expenses'],
+        datasets: [{
+          data: catValues.length ? catValues : [1],
+          backgroundColor: catLabels.length ? colors.slice(0, catLabels.length) : ['#e2e8f0'],
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Plus Jakarta Sans', size: 11 } } },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) { return ' ' + ctx.label + ': $' + ctx.raw.toFixed(2); }
+            }
+          }
+        },
+        cutout: '62%'
+      }
+    });
+  }
+
+  // 2. Monthly Trend Bar Chart
+  const barCtx = document.getElementById('monthlyBarChart')?.getContext('2d');
+  if (barCtx) {
+    if (barChartInstance) barChartInstance.destroy();
+    const monthLabels = Object.keys(monthly);
+    const monthValues = Object.values(monthly);
+    
+    barChartInstance = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: monthLabels.length ? monthLabels : ['2026-10'],
+        datasets: [{
+          label: 'Spending ($)',
+          data: monthValues.length ? monthValues : [0],
+          backgroundColor: '#059669',
+          borderRadius: 8,
+          barThickness: 28,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) { return ' Total: $' + ctx.raw.toFixed(2); }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(v) { return '$' + v; },
+              font: { family: 'Plus Jakarta Sans', size: 10 }
+            },
+            grid: { color: '#f1f5f9' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } }
+          }
+        }
+      }
+    });
+  }
+}
+
+// iOS Numbers Budget Settings Load & Save
+function updateBudgetSummary() {
+  const limit = parseFloat(document.getElementById("b-monthly-limit")?.value) || 0;
+  const dining = parseFloat(document.getElementById("b-dining-limit")?.value) || 0;
+  const groceries = parseFloat(document.getElementById("b-groceries-limit")?.value) || 0;
+  const shopping = parseFloat(document.getElementById("b-shopping-limit")?.value) || 0;
+  const utilities = parseFloat(document.getElementById("b-utilities-limit")?.value) || 0;
+  const savings = parseFloat(document.getElementById("b-savings-goal")?.value) || 0;
+
+  const allocated = dining + groceries + shopping + utilities;
+  const discretionary = Math.max(0, limit - allocated - savings);
+  const savingsRatio = limit > 0 ? Math.round((savings / limit) * 100) : 0;
+
+  const allocEl = document.getElementById("budget-alloc-val");
+  const savingsEl = document.getElementById("budget-savings-ratio");
+  const unallocEl = document.getElementById("budget-unalloc-val");
+  const badgeEl = document.getElementById("budget-summary-badge");
+
+  if (allocEl) allocEl.textContent = "$" + allocated.toLocaleString();
+  if (savingsEl) savingsEl.textContent = savingsRatio + "%";
+  if (unallocEl) unallocEl.textContent = "$" + discretionary.toLocaleString();
+
+  if (badgeEl) {
+    if (allocated + savings > limit) {
+      badgeEl.textContent = "Exceeds Ceiling";
+      badgeEl.style.background = "#fef2f2";
+      badgeEl.style.color = "#dc2626";
+      badgeEl.style.borderColor = "#fecaca";
+    } else {
+      badgeEl.textContent = "Balanced";
+      badgeEl.style.background = "#ecfdf5";
+      badgeEl.style.color = "#047857";
+      badgeEl.style.borderColor = "#a7f3d0";
+    }
+  }
+}
+
+async function loadBudgetSettings() {
+  try {
+    const res = await fetch("/api/budget");
+    const d = await res.json();
+    if (d.monthly_limit) document.getElementById("b-monthly-limit").value = d.monthly_limit;
+    if (d.dining_limit) document.getElementById("b-dining-limit").value = d.dining_limit;
+    if (d.groceries_limit) document.getElementById("b-groceries-limit").value = d.groceries_limit;
+    if (d.shopping_limit) document.getElementById("b-shopping-limit").value = d.shopping_limit;
+    if (d.utilities_limit) document.getElementById("b-utilities-limit").value = d.utilities_limit;
+    if (d.savings_goal) document.getElementById("b-savings-goal").value = d.savings_goal;
+    updateBudgetSummary();
+  } catch (e) {
+    console.warn("Could not load budget settings:", e);
+  }
+}
+
+async function saveBudgetSettings() {
+  const payload = {
+    monthly_limit: parseFloat(document.getElementById("b-monthly-limit").value) || 2000,
+    dining_limit: parseFloat(document.getElementById("b-dining-limit").value) || 400,
+    groceries_limit: parseFloat(document.getElementById("b-groceries-limit").value) || 500,
+    shopping_limit: parseFloat(document.getElementById("b-shopping-limit").value) || 300,
+    utilities_limit: parseFloat(document.getElementById("b-utilities-limit").value) || 250,
+    savings_goal: parseFloat(document.getElementById("b-savings-goal").value) || 500,
+  };
+
+  const btn = document.querySelector(".btn-save-budget");
+  btn.textContent = "Saving...";
+  try {
+    const res = await fetch("/api/budget", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      btn.textContent = "Saved ✓";
+      setTimeout(() => { btn.textContent = "Save Targets"; }, 2000);
+    }
+  } catch (e) {
+    alert("Error saving budget: " + e.message);
+    btn.textContent = "Save Targets";
+  }
+}
 </script>
 </body>
 </html>

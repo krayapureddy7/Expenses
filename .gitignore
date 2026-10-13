@@ -18,3 +18,19 @@ credentials*.json
 *token*.json
 .venv/
 __pycache__/
+
+# --- added by publish-to-github skill ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+node_modules/
+.video_tmp/
+.DS_Store
+.env
+*.env
+application_default_credentials.json
+*-sa-key.json
+service-account*.json
+# Keep the demo GIF (README embeds it); ignore the large raw recording.
+*.webm
