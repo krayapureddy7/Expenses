@@ -8,3 +8,13 @@ context.md
 node_modules/
 package-lock.json
 .video_tmp/
+
+# Secrets & tokens
+.env
+.env*
+*.pem
+*-key.json
+credentials*.json
+*token*.json
+.venv/
+__pycache__/
