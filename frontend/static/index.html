@@ -109,6 +109,29 @@
     align-items: center;
     gap: 0.85rem;
   }
+  .country-selector-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.75rem;
+    background: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(60,64,67,0.08);
+  }
+  .country-select {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    outline: none;
+  }
+  .country-select:focus {
+    outline: none;
+  }
   .btn-gmail {
     display: inline-flex;
     align-items: center;
@@ -769,6 +792,20 @@
     </div>
   </div>
   <div class="header-actions">
+    <div class="country-selector-wrap" title="Select country for currency & live local dining recommendations">
+      <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--text-muted);">public</span>
+      <select id="country-select" class="country-select" onchange="onCountryChange(this.value)">
+        <option value="US" data-currency="USD" data-symbol="$" data-city="San Francisco, CA" selected>🇺🇸 USA (USD $)</option>
+        <option value="IN" data-currency="INR" data-symbol="₹" data-city="Bengaluru, Karnataka">🇮🇳 India (INR ₹)</option>
+        <option value="UK" data-currency="GBP" data-symbol="£" data-city="London, UK">🇬🇧 UK (GBP £)</option>
+        <option value="EU" data-currency="EUR" data-symbol="€" data-city="Berlin, Germany">🇪🇺 Europe (EUR €)</option>
+        <option value="JP" data-currency="JPY" data-symbol="¥" data-city="Tokyo, Japan">🇯🇵 Japan (JPY ¥)</option>
+        <option value="CA" data-currency="CAD" data-symbol="CA$" data-city="Toronto, Canada">🇨🇦 Canada (CAD $)</option>
+        <option value="AU" data-currency="AUD" data-symbol="A$" data-city="Sydney, Australia">🇦🇺 Australia (AUD $)</option>
+        <option value="SG" data-currency="SGD" data-symbol="S$" data-city="Singapore">🇸🇬 Singapore (SGD $)</option>
+        <option value="AE" data-currency="AED" data-symbol="AED " data-city="Dubai, UAE">🇦🇪 UAE (AED)</option>
+      </select>
+    </div>
     <a id="gmail-auth-btn" class="btn-gmail" href="/auth/login">
       <svg class="google-logo" viewBox="0 0 24 24">
         <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
@@ -1256,6 +1293,35 @@ function renderReply(b, parts) {
   log.scrollTop = log.scrollHeight;
 }
 
+// Country & Currency Preferences State
+let currentCountry = {
+  code: "US",
+  currency: "USD",
+  symbol: "$",
+  city: "San Francisco, CA"
+};
+
+function onCountryChange(val) {
+  const sel = document.getElementById("country-select");
+  const opt = sel.options[sel.selectedIndex];
+  currentCountry = {
+    code: val,
+    currency: opt.dataset.currency || "USD",
+    symbol: opt.dataset.symbol || "$",
+    city: opt.dataset.city || "San Francisco, CA"
+  };
+
+  // Update all currency labels across iOS Numbers budget view
+  document.querySelectorAll(".ios-currency").forEach(el => el.textContent = currentCountry.symbol);
+  
+  // Reload analytics with new currency symbol
+  loadAnalyticsDashboard();
+
+  // Announce in chat
+  const b = bubble("agent");
+  b.innerHTML = `🌍 <b>Location & Currency Updated:</b> Switched to <b>${opt.text}</b>. Local dining and outing recommendations will now default to <b>${currentCountry.city}</b> with currency in <b>${currentCountry.currency} (${currentCountry.symbol})</b>.`;
+}
+
 form.addEventListener("submit", async (ev) => {
   ev.preventDefault();
   const text = input.value.trim();
@@ -1266,11 +1332,14 @@ form.addEventListener("submit", async (ev) => {
   const b = bubble("agent");
   b.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
   
+  // Enrich message with user selected country location & currency context
+  const contextualMessage = `[User Location: ${currentCountry.city}, Currency: ${currentCountry.currency} (${currentCountry.symbol})] ${text}`;
+
   try {
     const res = await fetch("/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text })
+      body: JSON.stringify({ message: contextualMessage })
     });
     const raw = await res.text();
     let data;
@@ -1350,7 +1419,8 @@ async function loadAnalyticsDashboard() {
     const res = await fetch("/api/expenses");
     const data = await res.json();
     
-    document.getElementById("dash-total-spending").textContent = "$" + (data.total_spending || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    const sym = currentCountry ? currentCountry.symbol : "$";
+    document.getElementById("dash-total-spending").textContent = sym + (data.total_spending || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     document.getElementById("dash-trans-count").textContent = data.transaction_count || 0;
     
     // Check against monthly limit
@@ -1365,11 +1435,11 @@ async function loadAnalyticsDashboard() {
     if (spent > limit) {
       statusEl.textContent = "Over Budget";
       statusEl.style.color = "#ef4444";
-      burnEl.textContent = `${pct}% of monthly cap ($${limit})`;
+      burnEl.textContent = `${pct}% of monthly cap (${sym}${limit})`;
     } else {
       statusEl.textContent = "Healthy";
       statusEl.style.color = "#059669";
-      burnEl.textContent = `${pct}% of monthly cap ($${limit})`;
+      burnEl.textContent = `${pct}% of monthly cap (${sym}${limit})`;
     }
 
     renderCharts(data.by_category || {}, data.by_month || {});
@@ -1385,7 +1455,7 @@ async function loadAnalyticsDashboard() {
             <td style="font-family:'JetBrains Mono', monospace; font-size:0.82rem; color:var(--text-muted);">${item.date || '—'}</td>
             <td style="font-weight:600;">${item.description || 'Expense'}</td>
             <td><span class="category-pill">${item.category || 'General'}</span></td>
-            <td style="text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700; color:var(--primary-dark);">$${Number(item.amount || 0).toFixed(2)}</td>
+            <td style="text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700; color:var(--primary-dark);">${sym}${Number(item.amount || 0).toFixed(2)}</td>
           </tr>
         `).join('');
       }
